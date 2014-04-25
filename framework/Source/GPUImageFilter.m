@@ -191,13 +191,18 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size)
     NSAssert(self.outputTextureOptions.internalFormat == GL_RGBA, @"For conversion to a CGImage the output texture format for this filter must be GL_RGBA.");
     NSAssert(self.outputTextureOptions.type == GL_UNSIGNED_BYTE, @"For conversion to a CGImage the type of the output texture of this filter must be GL_UNSIGNED_BYTE.");
     
-    __block CGImageRef cgImageFromBytes;
+    __block CGImageRef cgImageFromBytes = NULL;
 
     runSynchronouslyOnVideoProcessingQueue(^{
         [GPUImageContext useImageProcessingContext];
         
         CGSize currentFBOSize = [self sizeOfFBO];
-        NSUInteger totalBytesForImage = (int)currentFBOSize.width * (int)currentFBOSize.height * 4;
+        int fboWidth = (int)currentFBOSize.width;
+        int fboHeight = (int)currentFBOSize.height;
+        if (fboWidth <= 0 || fboHeight <= 0)
+            return;
+        
+        NSUInteger totalBytesForImage = fboWidth * fboHeight * 4;
         // It appears that the width of a texture must be padded out to be a multiple of 8 (32 bytes) if reading from it using a texture cache
         NSUInteger paddedWidthOfImage = CVPixelBufferGetBytesPerRow(renderTarget) / 4.0;
         NSUInteger paddedBytesForImage = paddedWidthOfImage * (int)currentFBOSize.height * 4;
