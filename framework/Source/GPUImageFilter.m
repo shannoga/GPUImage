@@ -382,8 +382,7 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size)
         
         GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
         
-        NSAssert(status == GL_FRAMEBUFFER_COMPLETE, @"Incomplete filter FBO: %x (%d x %d), tex = %d, fast = %d, ready = %d",
-                 status, (int)currentFBOSize.width, (int)currentFBOSize.height, outputTexture, [GPUImageContext supportsFastTextureUpload], preparedToCaptureImage);
+        NSAssert(status == GL_FRAMEBUFFER_COMPLETE, @"Incomplete filter FBO: %d", status);
         glBindTexture(GL_TEXTURE_2D, 0);
     });
 }
