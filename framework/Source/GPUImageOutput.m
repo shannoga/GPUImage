@@ -381,10 +381,6 @@ void reportAvailableMemoryForGPUImage(NSString *tag)
 - (UIImage *)imageFromCurrentlyProcessedOutputWithOrientation:(UIImageOrientation)imageOrientation;
 {
     CGImageRef cgImageFromBytes = [self newCGImageFromCurrentlyProcessedOutputWithOrientation:imageOrientation];
-    
-    if (!cgImageFromBytes)
-        return nil;
-    
     UIImage *finalImage = [UIImage imageWithCGImage:cgImageFromBytes scale:1.0 orientation:imageOrientation];
     CGImageRelease(cgImageFromBytes);
     
@@ -394,10 +390,6 @@ void reportAvailableMemoryForGPUImage(NSString *tag)
 - (UIImage *)imageByFilteringImage:(UIImage *)imageToFilter;
 {
     CGImageRef image = [self newCGImageByFilteringCGImage:[imageToFilter CGImage] orientation:[imageToFilter imageOrientation]];
-    
-    if (!image)
-        return nil;
-    
     UIImage *processedImage = [UIImage imageWithCGImage:image scale:[imageToFilter scale] orientation:[imageToFilter imageOrientation]];
     CGImageRelease(image);
     return processedImage;
@@ -423,10 +415,6 @@ void reportAvailableMemoryForGPUImage(NSString *tag)
 - (NSImage *)imageFromCurrentlyProcessedOutputWithOrientation:(UIImageOrientation)imageOrientation;
 {
     CGImageRef cgImageFromBytes = [self newCGImageFromCurrentlyProcessedOutputWithOrientation:imageOrientation];
-    
-    if (!cgImageFromBytes)
-        return nil;
-    
     NSImage *finalImage = [[NSImage alloc] initWithCGImage:cgImageFromBytes size:NSZeroSize];
     CGImageRelease(cgImageFromBytes);
     
