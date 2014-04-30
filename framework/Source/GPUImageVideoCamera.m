@@ -422,9 +422,6 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
 - (void)pauseCameraCapture;
 {
     capturePaused = YES;
-    runSynchronouslyOnVideoProcessingQueue(^{
-        glFinish();
-    });
 }
 
 - (void)resumeCameraCapture;
