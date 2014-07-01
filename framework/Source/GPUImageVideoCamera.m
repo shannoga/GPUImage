@@ -111,7 +111,10 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
     int imageBufferWidth, imageBufferHeight;
     
     BOOL addedAudioInputsDueToEncodingTarget;
+    int prevVideoAngle;
 }
+
+@property (nonatomic, strong) id<GPUImageVideoCameraPreprocessor> preprocessor;
 
 - (void)updateOrientationSendToTargets;
 - (void)convertYUVToRGBOutput;
@@ -721,6 +724,40 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
 
     if ([GPUImageContext supportsFastTextureUpload] && captureAsYUV)
     {
+        if (self.preprocessor)
+        {
+            int video_angle = 0;
+            UIDevice* dev = [UIDevice currentDevice];
+            
+            BOOL frontCamera = ([self cameraPosition] == AVCaptureDevicePositionFront);
+            
+            switch(dev.orientation)
+            {
+                case    UIDeviceOrientationUnknown:
+                    video_angle = 0;
+                    break;
+                case    UIDeviceOrientationPortrait:            // Device oriented vertically, home button on the bottom
+                    video_angle = prevVideoAngle = (frontCamera ? 90 : 270);
+                    break;
+                case    UIDeviceOrientationPortraitUpsideDown:  // Device oriented vertically, home button on the top
+                    video_angle = prevVideoAngle = (frontCamera ? 270: 90);
+                    break;
+                case    UIDeviceOrientationLandscapeLeft:       // Device oriented horizontally, home button on the right
+                    video_angle = prevVideoAngle = 180;
+                    break;
+                case    UIDeviceOrientationLandscapeRight:      // Device oriented horizontally, home button on the left
+                    video_angle = prevVideoAngle = 0;
+                    break;
+                case    UIDeviceOrientationFaceUp:              // Device oriented flat, face up
+                case    UIDeviceOrientationFaceDown:            // Device oriented flat, face down
+                default:
+                    video_angle = prevVideoAngle;
+                    break;
+            }
+            
+            cameraFrame = [self.preprocessor processFrame:cameraFrame timestamp:CMTimeConvertScale(currentTime, 1000, kCMTimeRoundingMethod_Default).value rotation:video_angle];
+        }
+        
         CVOpenGLESTextureRef luminanceTextureRef = NULL;
         CVOpenGLESTextureRef chrominanceTextureRef = NULL;
 
@@ -1116,6 +1153,11 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
 {
     _horizontallyMirrorRearFacingCamera = newValue;
     [self updateOrientationSendToTargets];
+}
+
+- (void) setVideoPreprocessor:(id<GPUImageVideoCameraPreprocessor>) preprocessor
+{
+    self.preprocessor = preprocessor;
 }
 
 @end

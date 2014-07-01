@@ -19,6 +19,9 @@ extern NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString
 - (void)willOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer;
 @end
 
+@protocol GPUImageVideoCameraPreprocessor
+- (CVImageBufferRef) processFrame:(CVImageBufferRef) buffer timestamp:(UInt64) timestamp rotation:(int) rotation;
+@end
 
 /**
  A GPUImageOutput that provides frames from either camera
@@ -150,5 +153,7 @@ extern NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString
 
 + (BOOL)isBackFacingCameraPresent;
 + (BOOL)isFrontFacingCameraPresent;
+
+- (void) setVideoPreprocessor:(id<GPUImageVideoCameraPreprocessor>) preprocessor;
 
 @end

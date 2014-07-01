@@ -30,6 +30,10 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size);
 @synthesize texture = _texture;
 @synthesize missingFramebuffer = _missingFramebuffer;
 
+#if TARGET_IPHONE_SIMULATOR || TARGET_OS_IPHONE
+@synthesize pixelBuffer = renderTarget;
+#endif
+
 #pragma mark -
 #pragma mark Initialization and teardown
 

@@ -248,7 +248,8 @@ static void *openGLESContextQueueKey;
 + (BOOL)supportsFastTextureUpload;
 {
 #if TARGET_IPHONE_SIMULATOR
-    return NO;
+    //    return NO;
+    return (CVOpenGLESTextureCacheCreate != NULL);
 #else
     return (CVOpenGLESTextureCacheCreate != NULL);
 #endif
